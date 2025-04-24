@@ -19,7 +19,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         const correctPassword = env.AUTH_PASSWORD;
         if (!correctPassword) {
             console.error('Server configuration error. AUTH_PASSWORD environment variable is not set in Cloudflare.');
-            return new Response(JSON.stringify({ success: false, error: 'Server configuration error. AUTH_PASSWORD environment variable is not set in Cloudflare.' }), {
+            return new Response(JSON.stringify({ success: false, error: 'Server configuration error. AUTH_PASSWORD environment variable is not set in Cloudflare. Current environment variable: ' + JSON.stringify(env) }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' },
             });
