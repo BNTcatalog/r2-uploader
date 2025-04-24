@@ -2,14 +2,29 @@ import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { UploadedFile } from '../types';
 
-const s3Client = new S3Client({
-  region: 'auto',
-  endpoint: import.meta.env.VITE_R2_PUBLIC_DOMAIN,
-  credentials: {
-    accessKeyId: import.meta.env.VITE_R2_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_R2_SECRET_ACCESS_KEY,
-  },
-});
+// Create S3 client using environment variables
+const createS3Client = () => {
+  const accountId = import.meta.env.VITE_ACCOUNT_ID;
+  const accessKeyId = import.meta.env.VITE_R2_ACCESS_KEY_ID;
+  const secretAccessKey = import.meta.env.VITE_R2_SECRET_ACCESS_KEY;
+  const publicDomain = import.meta.env.VITE_R2_PUBLIC_DOMAIN;
+
+  if (!accountId || !accessKeyId || !secretAccessKey || !publicDomain) {
+    throw new Error('Missing required R2 configuration. Please check your environment variables.');
+  }
+
+  return new S3Client({
+    region: 'auto',
+    endpoint: publicDomain,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+};
+
+// Initialize the client
+const s3Client = createS3Client();
 
 export const uploadToR2 = async (
   file: File,
@@ -19,18 +34,16 @@ export const uploadToR2 = async (
     throw new Error('Only image files are allowed');
   }
 
+  const bucketName = import.meta.env.VITE_R2_BUCKET_NAME;
+  const publicImageDomain = import.meta.env.VITE_PUBLIC_IMAGE_DOMAIN;
+
+  // Validate environment variables
+  if (!bucketName || !publicImageDomain) {
+    throw new Error('Missing required R2 configuration. Please check your environment variables.');
+  }
+
   try {
     const key = `${Date.now()}-${file.name}`;
-    const bucketName = import.meta.env.VITE_R2_BUCKET_NAME;
-
-    // Validate environment variables
-    if (!import.meta.env.VITE_R2_ACCESS_KEY_ID || 
-        !import.meta.env.VITE_R2_SECRET_ACCESS_KEY || 
-        !import.meta.env.VITE_R2_BUCKET_NAME || 
-        !import.meta.env.VITE_R2_PUBLIC_DOMAIN ||
-        !import.meta.env.VITE_PUBLIC_IMAGE_DOMAIN) {
-      throw new Error('Missing required R2 configuration');
-    }
 
     // Get presigned URL for upload
     const presignedUrl = await getSignedUrl(
@@ -57,7 +70,7 @@ export const uploadToR2 = async (
     }
 
     // Use the public image domain for the URL
-    const publicUrl = `${import.meta.env.VITE_PUBLIC_IMAGE_DOMAIN}/${key}`;
+    const publicUrl = `${publicImageDomain}/${key}`;
 
     return {
       id: key,
@@ -69,7 +82,7 @@ export const uploadToR2 = async (
     };
   } catch (error) {
     console.error('Upload error details:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
         throw new Error('Network error: Please check your internet connection and try again');
@@ -80,15 +93,21 @@ export const uploadToR2 = async (
       }
       throw new Error(`Upload failed: ${error.message}`);
     }
-    
+
     throw new Error('Upload failed: An unexpected error occurred');
   }
 };
 
 // Test function for connectivity
 export const testR2Connection = async (): Promise<boolean> => {
-  const testKey = `test-${Date.now()}.txt`;
   const bucketName = import.meta.env.VITE_R2_BUCKET_NAME;
+
+  if (!bucketName) {
+    console.error('Missing bucket name configuration');
+    return false;
+  }
+
+  const testKey = `test-${Date.now()}.txt`;
 
   try {
     // Upload test file
