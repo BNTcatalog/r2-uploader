@@ -22,11 +22,11 @@ export const useAuth = () => {
     try {
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       const correctPassword = import.meta.env.VITE_AUTH_PASSWORD;
-      
+
       if (!correctPassword) {
-        throw new Error('Authentication configuration is missing');
+        throw new Error('Authentication configuration is missing. Please set VITE_AUTH_PASSWORD in your environment.');
       }
 
       if (password === correctPassword) {

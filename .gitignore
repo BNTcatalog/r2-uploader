@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 .bolt
+
+node_modules
+.nvmrc
