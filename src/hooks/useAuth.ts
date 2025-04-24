@@ -1,3 +1,4 @@
+// src/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
 import { AuthState } from '../types';
 
@@ -6,6 +7,7 @@ export const useAuth = () => {
     isAuthenticated: false,
     error: null
   });
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   // Check if the user is already authenticated (from sessionStorage)
   useEffect(() => {
@@ -18,36 +20,46 @@ export const useAuth = () => {
     }
   }, []);
 
-  const login = async (password: string) => {
+  const login = async (password: string): Promise<boolean> => {
+    setIsLoading(true); // Start loading
+    setAuthState(prev => ({ ...prev, error: null })); // Clear previous errors
+
     try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const response = await fetch('/api/auth', { // Call the Cloudflare Function
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
 
-      const correctPassword = import.meta.env.VITE_AUTH_PASSWORD;
+      const data = await response.json();
 
-      if (!correctPassword) {
-        throw new Error('Authentication configuration is missing. Please set VITE_AUTH_PASSWORD in your environment.');
-      }
-
-      if (password === correctPassword) {
+      if (response.ok && data.success) {
         sessionStorage.setItem('is_authenticated', 'true');
         setAuthState({
           isAuthenticated: true,
           error: null
         });
+        setIsLoading(false); // Stop loading
         return true;
       } else {
+        // Handle specific errors or provide a general message
+        const errorMessage = data.error || `Authentication failed (Status: ${response.status})`;
         setAuthState({
           isAuthenticated: false,
-          error: 'Invalid password. Please try again.'
+          error: errorMessage
         });
+        setIsLoading(false); // Stop loading
         return false;
       }
     } catch (error) {
+      console.error("Login API call error:", error);
       setAuthState({
         isAuthenticated: false,
-        error: error instanceof Error ? error.message : 'Authentication failed. Please try again.'
+        error: error instanceof Error ? `Network or server error: ${error.message}` : 'Authentication failed. Please try again.'
       });
+      setIsLoading(false); // Stop loading
       return false;
     }
   };
@@ -62,6 +74,7 @@ export const useAuth = () => {
 
   return {
     ...authState,
+    isLoading, // Expose loading state
     login,
     logout
   };
