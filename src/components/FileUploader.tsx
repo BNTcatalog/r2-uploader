@@ -74,8 +74,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       <div className="max-w-5xl mx-auto">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Image Uploader</h1>
-            <p className="text-gray-500">Upload images to your R2 bucket</p>
+            <h1 className="text-2xl font-bold text-gray-800">Photo Uploader</h1>
+            <p className="text-gray-500">Upload your photos and get a link to share</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -118,7 +118,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   {isDragging ? 'Drop to upload!' : 'Upload your images'}
                 </h2>
                 <p className="text-gray-500 mb-4 text-center">
-                  Drag & drop your images here or click to browse
+                  Drag & drop your images here or click to browse. Note: This is for photos only, if you want to upload orbit images, please use the <a href="https://uploadimage.bntcatalog.org" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600">Image Uploader</a>
                 </p>
                 <button
                   type="button"
