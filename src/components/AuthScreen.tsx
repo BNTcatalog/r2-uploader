@@ -9,16 +9,16 @@ interface AuthScreenProps {
 const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, error }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
-    
+
     setIsLoading(true);
     await onLogin(password);
     setIsLoading(false);
   };
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-lg rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -26,12 +26,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, error }) => {
           <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
             <LockKeyhole className="w-8 h-8 text-blue-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Secure Image Uploader</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Orbit Image Uploader</h1>
           <p className="text-gray-500 mt-2 text-center">
-            Enter the password to access the uploader
+            Enter the password to upload your orbit images
           </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <div className="relative">
@@ -51,13 +51,13 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, error }) => {
               </p>
             )}
           </div>
-          
+
           <button
             type="submit"
             disabled={isLoading || !password.trim()}
             className={`w-full py-3 rounded-lg transition-all duration-300
-              ${isLoading || !password.trim() 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+              ${isLoading || !password.trim()
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
               }`}
           >
