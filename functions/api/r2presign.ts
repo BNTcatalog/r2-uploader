@@ -82,7 +82,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         });
 
         // --- Generate Key and Presign URL ---
-        const key = `${Date.now()}-${fileName}`;
+        //const key = `${Date.now()}-${fileName}`;
+        const key = fileName;
         const publicUrl = `${PUBLIC_IMAGE_DOMAIN}/${key}`; // Construct the final public URL
 
         const command = new PutObjectCommand({
