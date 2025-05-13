@@ -118,7 +118,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   {isDragging ? 'Drop to upload!' : 'Upload your images'}
                 </h2>
                 <p className="text-gray-500 mb-4 text-center">
-                  Drag & drop your images here or click to browse. Note: This is for orbit images only, if you want to upload your photos, please use the <a href="https://uploadphoto.bntcatalog.org" target="_blank" rel="noopener noreferrer">Photo Uploader</a>
+                  Drag & drop your images here or click to browse. Note: This is for orbit images only, if you want to upload your photos, please use the <a href="https://uploadphoto.bntcatalog.org" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600">Photo Uploader</a>
                 </p>
                 <button
                   type="button"
